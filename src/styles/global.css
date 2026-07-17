@@ -1,0 +1,92 @@
+@import './fonts.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Offsets in-page anchor jumps (Features/How it Works/FAQ) so content doesn't land under the fixed nav. */
+  scroll-padding-top: 84px;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #f2eee3;
+}
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: #17291e;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #0f1d15;
+}
+
+#root {
+  overflow-x: clip;
+}
+
+/* Hover states for the scattered "decision fatigue" bubbles in the Problem section.
+   Kept as real CSS (not JS state) so :hover costs nothing on the main thread. Background,
+   border-color, box-shadow and transform must all live here rather than inline — an inline
+   style attribute always beats a stylesheet rule (hover or not), so any of these set inline
+   would make the :hover rule inert. Per-item rotation comes in via the --rot custom property. */
+.bubble {
+  max-width: min(290px, 78vw);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(14.5px, 3.6vw, 16.5px);
+  font-weight: 600;
+  line-height: 1.4;
+  padding: clamp(13px, 3vw, 16px) clamp(17px, 4vw, 22px);
+  transform: rotate(var(--rot, 0deg));
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease, background 0.35s ease, border-color 0.35s ease;
+}
+
+.bubble-chat {
+  background: #faf7ee;
+  color: #17291e;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+}
+.bubble-chat.bubble-start {
+  border-radius: 20px 20px 20px 5px;
+}
+.bubble-chat.bubble-end {
+  border-radius: 20px 20px 5px 20px;
+}
+.bubble-chat:hover {
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.34);
+  transform: rotate(0deg) translateY(-3px);
+}
+
+.bubble-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #faf7ee;
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+.bubble-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.26);
+  transform: rotate(0deg) translateY(-3px);
+}
+
+/* Background lives on the class (not inline) so :hover can actually win the cascade. */
+.waitlist-btn {
+  background: #e3a62e;
+  transition: background 0.2s ease;
+}
+
+.waitlist-btn:hover {
+  background: #d89620;
+}
