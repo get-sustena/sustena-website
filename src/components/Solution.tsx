@@ -58,18 +58,19 @@ export function Solution() {
           >
             The Solution
           </div>
-          <div
+          <h2
             style={{
               fontFamily: "'Bricolage Grotesque',sans-serif",
               fontWeight: 800,
               fontSize: 'clamp(32px,4.2vw,52px)',
               color: '#1B211C',
               lineHeight: 1.12,
+              margin: 0,
               marginBottom: 24,
             }}
           >
             Sustena turns decisions into dinner.
-          </div>
+          </h2>
           <div style={{ fontSize: 16.5, lineHeight: 1.75, color: '#5C6459', maxWidth: 460, marginBottom: 20, fontFamily: "'Space Grotesk',sans-serif" }}>
             Instead of jumping between different apps and making everything yourself, Sustena brings the entire cooking journey together.
           </div>

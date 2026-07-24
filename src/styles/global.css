@@ -35,6 +35,31 @@ a:hover {
   overflow-x: clip;
 }
 
+/* Standard visually-hidden-but-accessible pattern: present in the DOM (crawlable, readable by
+   screen readers) without affecting layout or being visible on screen. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 100vh on mobile Safari/Chrome is sized to the viewport with the browser chrome hidden, but
+   the initial paint has the chrome (address bar) visible — so anything anchored to the bottom
+   of a 100vh box (e.g. the hero's "Scroll" hint) sits below the fold until the user scrolls
+   and the chrome collapses. 100svh is the "small viewport" size — always within what's actually
+   visible. The 100vh line stays first as a fallback for browsers that don't support svh; an
+   unsupported unit makes that whole declaration invalid, so it's simply ignored, not applied. */
+.viewport-fit-height {
+  height: 100vh;
+  height: 100svh;
+}
+
 /* Hover states for the scattered "decision fatigue" bubbles in the Problem section.
    Kept as real CSS (not JS state) so :hover costs nothing on the main thread. Background,
    border-color, box-shadow and transform must all live here rather than inline — an inline

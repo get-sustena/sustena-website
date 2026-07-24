@@ -44,18 +44,19 @@ export function Problem() {
           >
             The Problem
           </div>
-          <div
+          <h2
             style={{
               fontFamily: "'Bricolage Grotesque',sans-serif",
               fontWeight: 800,
               fontSize: 'clamp(34px,4vw,54px)',
               color: '#FAF7EE',
               lineHeight: 1.1,
+              margin: 0,
               marginBottom: 14,
             }}
           >
             Cooking isn't the hard part.
-          </div>
+          </h2>
           <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 'clamp(18px,1.8vw,21px)', color: 'rgba(250,247,238,0.65)', marginBottom: 32 }}>
             Making all the decisions before you start is.
           </div>

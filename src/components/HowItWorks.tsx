@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, useState } from 'react';
 import { css } from '../lib/css';
 import { clamp01, smoothstep } from '../lib/animation';
 import { useScrollProgress } from '../hooks/useScrollProgress';
@@ -21,7 +22,7 @@ const NODE_BASE =
 // blend — wide overlaps leave both panels' text visibly double-exposed, which reads as dirty.
 const PANEL_FALLOFF = 0.56;
 
-function panelAnim(hFloat: number, i: number, iconBg: string, howPanelPad: string) {
+function panelAnim(hFloat: number, i: number, iconBg: string, howPanelPad: string, justify: string) {
   const di = hFloat - i;
   const clD = Math.max(-1, Math.min(1, di / PANEL_FALLOFF));
   const opacity = Math.max(0, Math.cos((clD * Math.PI) / 2));
@@ -34,7 +35,7 @@ function panelAnim(hFloat: number, i: number, iconBg: string, howPanelPad: strin
   const cardCounterTy = (-(ty * 0.32)).toFixed(1);
   return {
     wrap: css(
-      `position:absolute; inset:0; padding:${howPanelPad}; box-sizing:border-box; display:flex; flex-direction:column; justify-content:center;` +
+      `position:absolute; inset:0; padding:${howPanelPad}; box-sizing:border-box; display:flex; flex-direction:column; justify-content:${justify};` +
         ` opacity:${opacity.toFixed(3)}; transform:translateY(${ty.toFixed(1)}px) scale(${scale.toFixed(3)});` +
         ` pointer-events:${pointerEvents}; z-index:${z}; will-change:transform,opacity;`
     ),
@@ -52,25 +53,36 @@ function panelAnim(hFloat: number, i: number, iconBg: string, howPanelPad: strin
 // purely on its own distance from the active point — nothing ever crossfades two titles in
 // the same spot. Exiting cards slide fully clear off the left edge while the incoming card
 // grows out of the small chip on the right — the two never spatially collide.
+// These are the dimensions at scale 1 (full size). conveyorAnim() multiplies every pixel
+// value by `scale`, which the component derives from the track's actual measured container
+// width — the unscaled 344px total track is wider than most phone screens, so without this
+// it overflows and gets clipped on the right instead of sitting centered.
 const TRACK_CHIP_W = 48;
 const TRACK_GAP = 10;
 const TRACK_FULL_W = 286;
 const TRACK_CHIP_X = TRACK_FULL_W + TRACK_GAP;
+const TRACK_TOTAL_W = TRACK_CHIP_X + TRACK_CHIP_W;
 // REST_FRAC is how much of each scroll-segment is spent fully settled before the handoff
 // starts; the rest is the actual motion — raising it compresses the motion into a shorter
 // scroll distance (snappier) without shortening how long things sit still and legible.
 const REST_FRAC = 0.55;
 
-function conveyorAnim(hFloat: number, i: number) {
+function conveyorAnim(hFloat: number, i: number, scale: number) {
+  const chipW = TRACK_CHIP_W * scale;
+  const fullW = TRACK_FULL_W * scale;
+  const chipX = fullW + TRACK_GAP * scale;
+
   const seg2 = Math.min(2, Math.max(0, Math.floor(hFloat)));
   const segT2 = Math.max(0, Math.min(1, hFloat - seg2));
   const handoffT = Math.max(0, Math.min(1, (segT2 - REST_FRAC) / (1 - REST_FRAC)));
   const easeOutQuad = 1 - (1 - handoffT) ** 2;
   const easeInOut = smoothstep(handoffT);
-  // CHIP_PAD centers a 26px circle exactly in a 48px box: (48-26)/2 = 11. Whenever the
-  // title has zero width (chip states) the circle must be the ONLY sized flex child, or
-  // flex-start packing will pull it left of true-center no matter what padding says.
-  const CHIP_PAD = (TRACK_CHIP_W - 26) / 2;
+  // CHIP_PAD centers the circle exactly in the chip box. Whenever the title has zero width
+  // (chip states) the circle must be the ONLY sized flex child, or flex-start packing will
+  // pull it left of true-center no matter what padding says.
+  const CHIP_PAD = (chipW - 26 * scale) / 2;
+  const padOuterLeft = 16 * scale;
+  const padOuterRight = 10 * scale;
 
   let x: number;
   let w: number;
@@ -81,42 +93,42 @@ function conveyorAnim(hFloat: number, i: number) {
   let padRight: number;
 
   if (i < seg2) {
-    x = -(TRACK_FULL_W + 60);
-    w = TRACK_FULL_W * 0.85;
+    x = -(fullW + 60 * scale);
+    w = fullW * 0.85;
     opacity = 0;
     isActiveStyle = true;
     titleOp = 0;
-    padLeft = 16;
-    padRight = 10;
+    padLeft = padOuterLeft;
+    padRight = padOuterRight;
   } else if (i === seg2) {
     const t = easeOutQuad;
-    x = -(TRACK_FULL_W + 60) * t;
-    w = TRACK_FULL_W - TRACK_FULL_W * 0.15 * t;
+    x = -(fullW + 60 * scale) * t;
+    w = fullW - fullW * 0.15 * t;
     opacity = 1 - t;
     isActiveStyle = true;
     titleOp = 1 - t;
-    padLeft = 16;
-    padRight = 10;
+    padLeft = padOuterLeft;
+    padRight = padOuterRight;
   } else if (i === seg2 + 1) {
     const t = easeInOut;
-    x = TRACK_CHIP_X * (1 - t);
-    w = TRACK_CHIP_W + (TRACK_FULL_W - TRACK_CHIP_W) * t;
+    x = chipX * (1 - t);
+    w = chipW + (fullW - chipW) * t;
     opacity = 1;
     isActiveStyle = t > 0.5;
     titleOp = Math.max(0, (t - 0.6) / 0.4);
-    padLeft = CHIP_PAD + (16 - CHIP_PAD) * t;
-    padRight = CHIP_PAD + (10 - CHIP_PAD) * t;
+    padLeft = CHIP_PAD + (padOuterLeft - CHIP_PAD) * t;
+    padRight = CHIP_PAD + (padOuterRight - CHIP_PAD) * t;
   } else if (i === seg2 + 2) {
-    x = TRACK_CHIP_X;
-    w = TRACK_CHIP_W;
+    x = chipX;
+    w = chipW;
     opacity = handoffT;
     isActiveStyle = false;
     titleOp = 0;
     padLeft = CHIP_PAD;
     padRight = CHIP_PAD;
   } else {
-    x = TRACK_CHIP_X;
-    w = TRACK_CHIP_W;
+    x = chipX;
+    w = chipW;
     opacity = 0;
     isActiveStyle = false;
     titleOp = 0;
@@ -137,15 +149,16 @@ function conveyorAnim(hFloat: number, i: number) {
   const cardBorder = isActiveStyle ? 'rgba(227,166,46,0.4)' : '#DDE0D2';
   const titleOpClamped = Math.max(0, titleOp);
 
+  const circleD = (26 * scale).toFixed(1);
   return {
     wrap: css(
-      `position:absolute; top:0; left:0; height:44px; width:${w.toFixed(1)}px; border-radius:14px; background:${cardBg}; border:1.5px solid ${cardBorder}; box-sizing:border-box; overflow:hidden; display:flex; align-items:center; gap:${(9 * titleOpClamped).toFixed(1)}px; padding:0 ${padRight.toFixed(1)}px 0 ${padLeft.toFixed(1)}px; opacity:${Math.max(0, opacity).toFixed(3)}; transform:translateX(${x.toFixed(1)}px); will-change:transform,width;`
+      `position:absolute; top:0; left:0; height:${(44 * scale).toFixed(1)}px; width:${w.toFixed(1)}px; border-radius:${(14 * scale).toFixed(1)}px; background:${cardBg}; border:1.5px solid ${cardBorder}; box-sizing:border-box; overflow:hidden; display:flex; align-items:center; gap:${(9 * scale * titleOpClamped).toFixed(1)}px; padding:0 ${padRight.toFixed(1)}px 0 ${padLeft.toFixed(1)}px; opacity:${Math.max(0, opacity).toFixed(3)}; transform:translateX(${x.toFixed(1)}px); will-change:transform,width;`
     ),
     numStyle: css(
-      `width:26px; height:26px; min-width:26px; border-radius:50%; background:${numBg}; border:1.5px solid ${numBg}; color:${numColor}; display:flex; align-items:center; justify-content:center; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:14.5px; flex-shrink:0;`
+      `width:${circleD}px; height:${circleD}px; min-width:${circleD}px; border-radius:50%; background:${numBg}; border:1.5px solid ${numBg}; color:${numColor}; display:flex; align-items:center; justify-content:center; font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:${(14.5 * scale).toFixed(1)}px; flex-shrink:0;`
     ),
     titleStyle: css(
-      `font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; color:#1B211C; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:${(220 * titleOpClamped).toFixed(0)}px; opacity:${titleOpClamped.toFixed(3)};`
+      `font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:${(14 * scale).toFixed(1)}px; color:#1B211C; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:${(220 * scale * titleOpClamped).toFixed(0)}px; opacity:${titleOpClamped.toFixed(3)};`
     ),
   };
 }
@@ -156,6 +169,42 @@ export function HowItWorks() {
   const isMobile = vw < 640;
   const isTablet = vw >= 640 && vw < 1024;
   const isCompact = isMobile || isTablet;
+
+  // The 4 step panels hold different amounts of content (panels 1-2's list-style cards run
+  // taller than panel 4's single line + progress bar), but mobile gave the right column one
+  // fixed height — so the shorter panels had correct padding while the taller ones got
+  // clipped top and bottom by the container's overflow:hidden. Measuring each panel's real
+  // content height and sizing the container to the tallest one fixes that for all 4 without
+  // guessing a magic number that breaks again the next time any copy changes.
+  const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [measuredPanelHeight, setMeasuredPanelHeight] = useState(0);
+
+  // The mobile step-tracker's "conveyor belt" track is laid out in a fixed 344px pixel space
+  // (see conveyorAnim) — wider than most phone screens, which clipped it on the right and
+  // threw off centering. Measuring the actual available width and scaling the whole track
+  // down to fit keeps every distance/position in that animation proportionally correct.
+  const trackContainerRef = useRef<HTMLDivElement | null>(null);
+  const [trackScale, setTrackScale] = useState(1);
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const heights = panelRefs.current.map((el) => el?.scrollHeight ?? 0);
+      const maxHeight = Math.max(0, ...heights);
+      if (maxHeight > 0) setMeasuredPanelHeight(maxHeight);
+
+      const trackEl = trackContainerRef.current;
+      if (trackEl) {
+        const available = trackEl.clientWidth;
+        setTrackScale(available > 0 ? Math.min(1, available / TRACK_TOTAL_W) : 1);
+      }
+    };
+    measure();
+    // Self-hosted fonts swap in after first paint (font-display: swap); re-measure once they
+    // land in case the fallback-font metrics wrapped text differently.
+    document.fonts?.ready?.then(measure).catch(() => {});
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [vw, isCompact]);
 
   const hp = clamp01(howProgress);
   const hFloat = hp * 3; // 0..3 across the 4 nodes
@@ -187,24 +236,36 @@ export function HowItWorks() {
     };
   });
 
-  const howPanelPad = isCompact ? 'clamp(22px,5.5vw,32px) clamp(20px,5.5vw,36px)' : '40px 64px';
+  const howPanelPad = isCompact ? 'clamp(16px,4vw,24px) clamp(16px,4.5vw,28px)' : '40px 64px';
+  // Compact panels top-align instead of centering: the container is sized to the tallest of
+  // the 4 panels (see howRightMinHeightPx below), so a shorter panel centered in that box got
+  // padded evenly top AND bottom, reading as oversized whitespace. Anchoring to the top keeps
+  // every panel's top padding identical and consistent; any leftover space from a shorter
+  // panel only shows below its card, which is far less noticeable than a big gap up top.
+  const howJustify = isCompact ? 'flex-start' : 'center';
   const panels = [
-    panelAnim(hFloat, 0, 'rgba(227,166,46,0.14)', howPanelPad),
-    panelAnim(hFloat, 1, 'rgba(52,182,115,0.14)', howPanelPad),
-    panelAnim(hFloat, 2, 'rgba(227,166,46,0.14)', howPanelPad),
-    panelAnim(hFloat, 3, 'rgba(52,182,115,0.14)', howPanelPad),
+    panelAnim(hFloat, 0, 'rgba(227,166,46,0.14)', howPanelPad, howJustify),
+    panelAnim(hFloat, 1, 'rgba(52,182,115,0.14)', howPanelPad, howJustify),
+    panelAnim(hFloat, 2, 'rgba(227,166,46,0.14)', howPanelPad, howJustify),
+    panelAnim(hFloat, 3, 'rgba(52,182,115,0.14)', howPanelPad, howJustify),
   ];
 
-  const conveyorCards = HOW_META.map((s, i) => ({ ...s, ...conveyorAnim(hFloat, i) }));
-  const mobileTrackWrapStyle = { position: 'relative' as const, width: TRACK_CHIP_X + TRACK_CHIP_W, maxWidth: '100%', height: 44 };
+  const conveyorCards = HOW_META.map((s, i) => ({ ...s, ...conveyorAnim(hFloat, i, trackScale) }));
+  const mobileTrackWrapStyle = { position: 'relative' as const, width: TRACK_TOTAL_W * trackScale, maxWidth: '100%', height: 44 * trackScale };
   const mobileTrackFillStyle = css(`height:100%; background:#E3A62E; border-radius:3px; width:${((hFloat / 3) * 100).toFixed(1)}%;`);
 
-  const howRightMinHeightPx = isCompact ? 400 : 420;
+  // 340/420 are sane fallbacks for the first frame before measurement lands; real content
+  // almost always exceeds them, at which point the measured height takes over.
+  const howRightMinHeightPx = isCompact ? Math.max(measuredPanelHeight, 340) : Math.max(measuredPanelHeight, 420);
   const howCardStyle = css(
     `width:100%; max-width:1080px; flex-shrink:0; background:#FEFCF6; border:1px solid #DCD3B4; border-radius:${isMobile ? '20px' : '30px'}; box-shadow:0 46px 100px -32px rgba(23,41,30,0.48), 0 10px 28px -12px rgba(23,41,30,0.12), 0 0 0 1px rgba(255,255,255,0.6) inset; display:grid; grid-template-columns:${isCompact ? '1fr' : '300px 1fr'}; ${isCompact ? `grid-template-rows:auto ${howRightMinHeightPx}px;` : ''} overflow:hidden;`
   );
   const howLeftColStyle = css(
-    `padding:${isCompact ? 'clamp(14px,3.4vw,20px) clamp(16px,4.2vw,24px) clamp(12px,3vw,16px)' : '48px 36px'}; background:#FEFCF6; display:flex; flex-direction:column; align-items:center; justify-content:center; box-sizing:border-box; ${isCompact ? 'border-bottom:1px solid #EDE7D4;' : ''}`
+    // min-width:0 overrides the browser default of min-width:auto on grid/flex items, which
+    // otherwise refuses to shrink this column below its content's natural width — on mobile
+    // that content includes the fixed-pixel conveyor track, so without this the column (and
+    // the whole card) got forced wider than the viewport regardless of the track's own scale.
+    `padding:${isCompact ? 'clamp(14px,3.4vw,20px) clamp(16px,4.2vw,24px) clamp(12px,3vw,16px)' : '48px 36px'}; background:#FEFCF6; display:flex; flex-direction:column; align-items:center; justify-content:center; box-sizing:border-box; min-width:0; ${isCompact ? 'border-bottom:1px solid #EDE7D4;' : ''}`
   );
   const howStepperInnerStyle = css(`width:100%; max-width:${isCompact ? '360px' : '200px'};`);
   const howRightColStyle = css(`position:relative; min-height:${howRightMinHeightPx}px; height:${isCompact ? howRightMinHeightPx + 'px' : 'auto'}; background:#FEFCF6; overflow:hidden;`);
@@ -224,10 +285,10 @@ export function HowItWorks() {
       }}
     >
       <div
+        className="viewport-fit-height"
         style={{
           position: 'sticky',
           top: 0,
-          height: '100vh',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -250,9 +311,9 @@ export function HowItWorks() {
           >
             How It Works
           </div>
-          <div style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 800, fontSize: 'clamp(24px,3.8vw,46px)', color: '#1B211C', lineHeight: 1.14 }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 800, fontSize: 'clamp(24px,3.8vw,46px)', color: '#1B211C', lineHeight: 1.14, margin: 0 }}>
             From question to finished meal.
-          </div>
+          </h2>
         </div>
 
         <div style={howCardStyle}>
@@ -280,7 +341,10 @@ export function HowItWorks() {
               </div>
             </div>
 
-            <div style={{ width: isCompact ? '100%' : undefined, display: isCompact ? 'block' : 'none' }}>
+            <div
+              ref={trackContainerRef}
+              style={{ width: isCompact ? '100%' : undefined, minWidth: 0, overflow: 'hidden', display: isCompact ? 'block' : 'none' }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', marginBottom: 9 }}>
                 <div style={mobileTrackWrapStyle}>
                   {conveyorCards.map((cc, i) => (
@@ -300,7 +364,7 @@ export function HowItWorks() {
           {/* RIGHT: crossfading step panels with product mocks */}
           <div style={howRightColStyle}>
             {/* Panel 01 */}
-            <div style={panels[0].wrap}>
+            <div ref={(el) => { panelRefs.current[0] = el; }} style={panels[0].wrap}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                 <span style={panels[0].icon}>
                   <CEIcon icon="budget" size={20} color="#E3A62E" />
@@ -357,7 +421,7 @@ export function HowItWorks() {
             </div>
 
             {/* Panel 02 */}
-            <div style={panels[1].wrap}>
+            <div ref={(el) => { panelRefs.current[1] = el; }} style={panels[1].wrap}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                 <span style={panels[1].icon}>
                   <CEIcon icon="plan" size={20} color="#279a5f" />
@@ -402,7 +466,7 @@ export function HowItWorks() {
             </div>
 
             {/* Panel 03 */}
-            <div style={panels[2].wrap}>
+            <div ref={(el) => { panelRefs.current[2] = el; }} style={panels[2].wrap}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                 <span style={panels[2].icon}>
                   <CEIcon icon="shop" size={20} color="#E3A62E" />
@@ -455,7 +519,7 @@ export function HowItWorks() {
             </div>
 
             {/* Panel 04 */}
-            <div style={panels[3].wrap}>
+            <div ref={(el) => { panelRefs.current[3] = el; }} style={panels[3].wrap}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                 <span style={panels[3].icon}>
                   <CEIcon icon="cook" size={20} color="#279a5f" />

@@ -190,7 +190,7 @@ export function Hero() {
 
   return (
     <div ref={wrapperRef} data-screen-label="Hero (scroll-jacked)" style={{ position: 'relative', height: '1000vh' }}>
-      <div style={{ position: 'sticky', top: 0, height: '100vh', width: '100%', overflow: 'hidden', background: '#17291E' }}>
+      <div className="viewport-fit-height" style={{ position: 'sticky', top: 0, width: '100%', overflow: 'hidden', background: '#17291E' }}>
         <div style={bgDarkStyle} />
         <div style={bgLightStyle} />
         <div style={blackOverlayStyle} />
@@ -545,9 +545,15 @@ export function Hero() {
               fontWeight: 600,
               marginBottom: 14,
               fontFamily: "'Space Grotesk',sans-serif",
+              // finalGroupStyle is an absolutely-positioned box with only a max-width (no
+              // explicit width), so it shrink-wraps to whatever its content needs. Without
+              // this, the button was free to wrap its own text, which let the browser settle
+              // on an even narrower container — nowrap keeps "Join Waitlist" as one unbreakable
+              // unit so the container can't collapse smaller than it needs.
+              whiteSpace: 'nowrap',
             }}
           >
-            Join the Waitlist
+            Join Waitlist
           </a>
           <div style={{ fontSize: 13.5, color: '#8a9187', fontFamily: "'Space Grotesk',sans-serif" }}>
             Launching soon. Be among the first to experience Sustena.

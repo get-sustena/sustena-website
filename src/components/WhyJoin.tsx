@@ -42,18 +42,19 @@ export function WhyJoin() {
         >
           Join The Waitlist
         </div>
-        <div
+        <h2
           style={{
             fontFamily: "'Bricolage Grotesque',sans-serif",
             fontWeight: 800,
             fontSize: 'clamp(30px,4.2vw,50px)',
             color: '#FAF7EE',
             lineHeight: 1.14,
+            margin: 0,
             marginBottom: 20,
           }}
         >
           Why join the waitlist?
-        </div>
+        </h2>
         <div
           style={{
             fontSize: 'clamp(14.5px,3vw,16.5px)',

@@ -1,6 +1,7 @@
 import { css } from '../lib/css';
 import { useViewportWidth } from '../hooks/useViewportWidth';
-import { ResolvedLineMark } from './icons/ResolvedLineMark';
+import { LogoImage } from './icons/LogoImage';
+import logoInk from '../assets/images/logo/resolved-line-ink.svg';
 import { WAITLIST_FORM_URL } from '../lib/constants';
 import { smoothScrollTo } from '../lib/scroll';
 
@@ -20,9 +21,14 @@ export function Nav() {
   const vw = useViewportWidth();
   const isMobile = vw < 640;
 
+  // white-space:nowrap + flex-shrink:0 (on both the group and each link) are defensive: they
+  // guarantee none of the three links can ever be squeezed into wrapping their own text onto a
+  // second line, regardless of viewport width, zoom level, or a fallback font metric being
+  // wider than the loaded one during the brief pre-font-load flash.
   const navLinksStyle = css(
-    `display:${isMobile ? 'none' : 'flex'}; align-items:center; gap:clamp(16px,2.4vw,30px); font-size:14.5px; color:#1B211C; font-weight:500; font-family:'Space Grotesk',sans-serif;`
+    `display:${isMobile ? 'none' : 'flex'}; align-items:center; gap:clamp(16px,2.4vw,30px); font-size:14.5px; color:#1B211C; font-weight:500; font-family:'Space Grotesk',sans-serif; white-space:nowrap; flex-shrink:0;`
   );
+  const navLinkStyle: React.CSSProperties = { color: 'inherit', whiteSpace: 'nowrap', flexShrink: 0 };
 
   return (
     <nav
@@ -31,24 +37,24 @@ export function Nav() {
       )}
     >
       <div style={css('display:flex; align-items:flex-end; gap:9px;')}>
-        <ResolvedLineMark fill="#17291E" tight h={22} />
+        <LogoImage src={logoInk} h={22} />
         <span
           style={css(
-            `font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(19px,4.4vw,23px); line-height:0.8; letter-spacing:-0.01em; color:#17291E;`
+            `font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(19px,4.4vw,23px); line-height:0.8; letter-spacing:-0.01em; color:#279a5f;`
           )}
         >
-          Sus<span style={{ color: '#279a5f' }}>Tena</span>
+          Sustena
         </span>
       </div>
       <div style={css('display:flex; align-items:center; gap:clamp(14px,3vw,36px);')}>
         <div style={navLinksStyle}>
-          <a href="#features" onClick={(e) => scrollToSection(e, 'features')} style={{ color: 'inherit' }}>
+          <a href="#features" onClick={(e) => scrollToSection(e, 'features')} style={navLinkStyle}>
             Features
           </a>
-          <a href="#how-it-works" onClick={(e) => scrollToSection(e, 'how-it-works')} style={{ color: 'inherit' }}>
+          <a href="#how-it-works" onClick={(e) => scrollToSection(e, 'how-it-works')} style={navLinkStyle}>
             How it Works
           </a>
-          <a href="#faq" onClick={(e) => scrollToSection(e, 'faq')} style={{ color: 'inherit' }}>
+          <a href="#faq" onClick={(e) => scrollToSection(e, 'faq')} style={navLinkStyle}>
             FAQ
           </a>
         </div>

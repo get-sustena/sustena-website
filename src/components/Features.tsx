@@ -124,9 +124,9 @@ export function Features() {
           >
             Features
           </div>
-          <div style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 800, fontSize: 'clamp(30px,4.2vw,50px)', color: '#1B211C', lineHeight: 1.14 }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 800, fontSize: 'clamp(30px,4.2vw,50px)', color: '#1B211C', lineHeight: 1.14, margin: 0 }}>
             Everything you need to plan meals better.
-          </div>
+          </h2>
         </div>
 
         <div style={{ display: 'flex', gap: 'clamp(18px,3vw,32px)', justifyContent: 'center', flexWrap: 'wrap', padding: '20px 0 10px' }}>

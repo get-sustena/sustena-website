@@ -11,11 +11,24 @@ const FAQS = [
   { q: 'When will Sustena launch?', a: "Join the waitlist and we'll let you know as soon as early access begins." },
 ];
 
+// Sourced from the same FAQS array rendered below, so the structured data can never drift
+// out of sync with the visible copy (Google requires FAQPage markup to match what's on-page).
+const FAQ_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQS.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+
 export function FAQ() {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
     <section id="faq" data-screen-label="FAQ" style={{ position: 'relative', background: '#F2EEE3', padding: 'clamp(80px,14vw,140px) clamp(22px,6vw,48px) clamp(90px,15vw,160px)' }}>
+      <script type="application/ld+json">{JSON.stringify(FAQ_SCHEMA)}</script>
       <div style={{ maxWidth: 820, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <div
@@ -31,9 +44,9 @@ export function FAQ() {
           >
             FAQ
           </div>
-          <div style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 800, fontSize: 'clamp(32px,4.2vw,50px)', color: '#1B211C', lineHeight: 1.14 }}>
+          <h2 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 800, fontSize: 'clamp(32px,4.2vw,50px)', color: '#1B211C', lineHeight: 1.14, margin: 0 }}>
             Frequently Asked Questions
-          </div>
+          </h2>
         </div>
 
         {FAQS.map((f, i) => {
@@ -44,7 +57,7 @@ export function FAQ() {
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', gap: 20 }}
                 onClick={() => setOpenIndex((prev) => (prev === i ? -1 : i))}
               >
-                <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 18, fontWeight: 600, color: '#1B211C' }}>{f.q}</div>
+                <h3 style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 18, fontWeight: 600, color: '#1B211C', margin: 0 }}>{f.q}</h3>
                 <div
                   style={{
                     display: 'flex',

@@ -11,9 +11,9 @@ export function FinalCTA() {
         textAlign: 'center',
       }}
     >
-      <div style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 800, fontSize: 'clamp(32px,4.8vw,60px)', color: '#FAF7EE', lineHeight: 1.16, marginBottom: 8 }}>
+      <h2 style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 800, fontSize: 'clamp(32px,4.8vw,60px)', color: '#FAF7EE', lineHeight: 1.16, margin: 0, marginBottom: 8 }}>
         Stop asking what to cook.
-      </div>
+      </h2>
       <div style={{ fontFamily: "'Bricolage Grotesque',sans-serif", fontWeight: 800, fontSize: 'clamp(32px,4.8vw,60px)', color: '#FAF7EE', lineHeight: 1.16, marginBottom: 36 }}>
         Start looking forward to mealtime.
       </div>
