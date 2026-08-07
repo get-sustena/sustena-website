@@ -1,5 +1,24 @@
 # React + TypeScript + Vite
 
+## Account-action pages
+
+The website handles the public links used by Sustena transactional emails:
+
+- `/verify?token=...`
+- `/reset?code=...`
+- `/unsubscribe?u=...`
+- `/settings/notifications?u=...`
+- `/help` and `/privacy`
+
+Set `VITE_API_BASE_URL` at build time to the public backend URL including `/api/v1`, for example:
+
+```bash
+VITE_API_BASE_URL=https://api.example.com/api/v1
+```
+
+The included Netlify `_redirects` file and Vercel rewrite make direct visits to these client-side
+routes resolve to the Vite entry point.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
