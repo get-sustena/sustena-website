@@ -5,8 +5,7 @@ import logoInk from '../assets/images/logo/resolved-line-ink.svg';
 import { WAITLIST_FORM_URL } from '../lib/constants';
 import { smoothScrollTo } from '../lib/scroll';
 
-// Matches the html { scroll-padding-top } fallback in global.css — kept in sync so both the
-// JS-driven scroll here and a plain (no-JS) anchor jump land in the same place under the nav.
+// Keep this aligned with global.css scroll-padding-top.
 const NAV_OFFSET = 84;
 
 function scrollToSection(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
@@ -21,10 +20,6 @@ export function Nav() {
   const vw = useViewportWidth();
   const isMobile = vw < 640;
 
-  // white-space:nowrap + flex-shrink:0 (on both the group and each link) are defensive: they
-  // guarantee none of the three links can ever be squeezed into wrapping their own text onto a
-  // second line, regardless of viewport width, zoom level, or a fallback font metric being
-  // wider than the loaded one during the brief pre-font-load flash.
   const navLinksStyle = css(
     `display:${isMobile ? 'none' : 'flex'}; align-items:center; gap:clamp(16px,2.4vw,30px); font-size:14.5px; color:#1B211C; font-weight:500; font-family:'Space Grotesk',sans-serif; white-space:nowrap; flex-shrink:0;`
   );

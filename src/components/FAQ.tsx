@@ -11,8 +11,7 @@ const FAQS = [
   { q: 'When will Sustena launch?', a: "Join the waitlist and we'll let you know as soon as early access begins." },
 ];
 
-// Sourced from the same FAQS array rendered below, so the structured data can never drift
-// out of sync with the visible copy (Google requires FAQPage markup to match what's on-page).
+// Generate schema from visible content because search engines require them to match.
 const FAQ_SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',

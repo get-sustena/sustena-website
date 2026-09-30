@@ -62,7 +62,7 @@ export function Hero() {
       try {
         setPathLength(el.getTotalLength());
       } catch {
-        // ignore — falls back to the approximate length below
+        // Keep the approximate path-length fallback.
       }
     }
   }, []);
@@ -72,7 +72,6 @@ export function Hero() {
   const isTablet = viewportW >= 640 && viewportW < 1024;
   const isCompact = isMobile || isTablet;
 
-  // --- opening scene: draw the mark, hold, fade out (occupies first 15% of scroll) ---
   const introEnd = 0.15;
   const drawEndP = 0.095;
   const holdEndP = 0.12;
@@ -87,20 +86,16 @@ export function Hero() {
   const glowPx = (26 * drawT).toFixed(0);
   const glowAlpha = (0.55 * drawT).toFixed(2);
 
-  // black-to-brand crossfade: pure black while undrawn, full color once the line completes
   const blackOverlayStyle = css(`position:absolute; inset:0; z-index:1; background:#000000; opacity:${(1 - drawT).toFixed(3)}; pointer-events:none;`);
 
-  // p2: remaps the rest of the hero timeline back to a clean 0..1 range after the intro
   const p2 = clamp01((p - introEnd) / (1 - introEnd));
   const env = (a: number, b: number, c?: number, d?: number) => envelope(p2, a, b, c, d);
 
-  // --- background crossfade ---
   const bgLightT = clamp01((p2 - 0.49) / (0.575 - 0.49));
   const bgDarkT = 1 - bgLightT;
   const bgDarkStyle = css(`position:absolute; inset:0; z-index:0; background:radial-gradient(ellipse at 50% 32%, #1c3324 0%, #17291E 65%); opacity:${bgDarkT};`);
   const bgLightStyle = css(`position:absolute; inset:0; z-index:0; background:linear-gradient(180deg, #FAF7EE 0%, #F2EEE3 100%); opacity:${bgLightT};`);
 
-  // --- chrome (progress rail + scroll hint) ---
   const chromeOpacityNum = (1 - clamp01((p2 - 0.85) / 0.05)).toFixed(2);
   const progressFillStyle = css(`width:100%; background:#E3A62E; border-radius:2px; height:${(p * 100).toFixed(1)}%;`);
   const scrollHintOpacity = (1 - clamp01(p / 0.03)).toFixed(2);
@@ -108,13 +103,11 @@ export function Hero() {
     `position:absolute; bottom:40px; left:50%; transform:translateX(-50%); z-index:6; text-align:center; color:#FAF7EE; opacity:${scrollHintOpacity}; pointer-events:none; font-family:'JetBrains Mono',monospace;`
   );
 
-  // --- scene 1 ---
   const line1Style = css(textStyle(env(0, 0.018, 0.036, 0.05), { size: 'clamp(20px,2.6vw,32px)', color: '#FAF7EE', weight: 500 }));
   const questionStyle = css(
     textStyle(env(0.055, 0.09, 0.335, 0.365), { size: 'clamp(36px,6vw,92px)', bricolage: true, weight: 800, color: '#FAF7EE', blurAmt: 9 })
   );
 
-  // --- scene 2: decision cards / scene 3: chaos ---
   const cardsBase = 0.095;
   const cardsStagger = 0.016;
   const cardsDur = 0.02;
@@ -135,11 +128,9 @@ export function Hero() {
     return { text: c.text, style: css(floatStyle(e, { top: c.top, left: c.left, rot: c.rot, variant: c.kind, viewportW })) };
   });
 
-  // --- scene 4: problem statements ---
   const problem1Style = css(textStyle(env(0.37, 0.395, 0.415, 0.435), { size: 'clamp(26px,4.2vw,48px)', bricolage: true, weight: 700, color: '#FAF7EE' }));
   const problem2Style = css(textStyle(env(0.44, 0.465, 0.5, 0.525), { size: 'clamp(28px,4.6vw,52px)', bricolage: true, weight: 800, color: '#E3A62E' }));
 
-  // --- phone group ---
   const phoneE = env(0.53, 0.585);
   const shiftT = clamp01((p2 - 0.875) / (0.93 - 0.875));
   const phoneScale = 1 - 0.14 * shiftT;
@@ -150,7 +141,6 @@ export function Hero() {
       `transform:translate(-50%,-50%) translateY(${((1 - phoneE) * 26).toFixed(1)}px) translateX(${phoneShiftX.toFixed(1)}px) scale(${((0.95 + 0.05 * phoneE) * phoneScale).toFixed(3)});`
   );
 
-  // --- phone internal screens ---
   const mkScreenStyle = (e: number) =>
     css(`position:absolute; inset:0; padding:20px 20px 8px; opacity:${clamp01(e)}; transform:translateY(${((1 - clamp01(e)) * 10).toFixed(1)}px);`);
   const screenInputsStyle = mkScreenStyle(env(0.545, 0.575, 0.615, 0.635));
@@ -180,7 +170,6 @@ export function Hero() {
     style: { width: 8, height: 8, borderRadius: '50%', background: i <= stepIndex ? '#E3A62E' : '#DBDFD3' },
   }));
 
-  // --- final ---
   const finalE = env(0.875, 0.905);
   const finalOffsetX = isCompact ? 0 : 230;
   const finalGroupStyle = css(
@@ -545,11 +534,6 @@ export function Hero() {
               fontWeight: 600,
               marginBottom: 14,
               fontFamily: "'Space Grotesk',sans-serif",
-              // finalGroupStyle is an absolutely-positioned box with only a max-width (no
-              // explicit width), so it shrink-wraps to whatever its content needs. Without
-              // this, the button was free to wrap its own text, which let the browser settle
-              // on an even narrower container — nowrap keeps "Join Waitlist" as one unbreakable
-              // unit so the container can't collapse smaller than it needs.
               whiteSpace: 'nowrap',
             }}
           >

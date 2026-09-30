@@ -1,10 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 
-/**
- * Tracks 0..1 scroll progress through a tall wrapper element (used for the
- * scroll-jacked, sticky-positioned Hero and How-It-Works sections). progress is
- * (-wrapper.top) / (wrapper.height - viewportHeight), clamped to [0,1].
- */
 export function useScrollProgress<T extends HTMLElement>() {
   const ref = useRef<T | null>(null);
   const [progress, setProgress] = useState(0);

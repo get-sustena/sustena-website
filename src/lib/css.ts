@@ -1,6 +1,5 @@
 import type { CSSProperties } from 'react';
 
-/** Parses a "prop:value; prop2:value2;" CSS declaration string into a React style object. */
 export function css(text: string): CSSProperties {
   const style: Record<string, string> = {};
   for (const decl of text.split(';')) {

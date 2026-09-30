@@ -1,11 +1,7 @@
 import type { CSSProperties } from 'react';
 import { RESOLVED_LINE_TIGHT_VIEWBOX } from './ResolvedLineMark';
 
-// The provided logo assets are drawn on a full 240x240 canvas with the mark inset within it
-// (RESOLVED_LINE_TIGHT_VIEWBOX gives that inset region). Rendering the asset directly at small
-// sizes (e.g. next to the nav wordmark) would make the mark itself tiny inside a lot of empty
-// padding, so this crops to just the mark's bounding box via plain image scale + offset — no
-// SVG manipulation, just the real asset file positioned with CSS.
+// Crop the padded source canvas to the mark's tight bounds at small sizes.
 const CANVAS = 240;
 const [TIGHT_X, TIGHT_Y, TIGHT_W, TIGHT_H] = RESOLVED_LINE_TIGHT_VIEWBOX.split(' ').map(Number);
 

@@ -6,7 +6,7 @@
 
 html {
   scroll-behavior: smooth;
-  /* Offsets in-page anchor jumps (Features/How it Works/FAQ) so content doesn't land under the fixed nav. */
+  /* Keep anchor targets below the fixed navigation. */
   scroll-padding-top: 84px;
 }
 
@@ -35,8 +35,6 @@ a:hover {
   overflow-x: clip;
 }
 
-/* Standard visually-hidden-but-accessible pattern: present in the DOM (crawlable, readable by
-   screen readers) without affecting layout or being visible on screen. */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -49,22 +47,13 @@ a:hover {
   border: 0;
 }
 
-/* 100vh on mobile Safari/Chrome is sized to the viewport with the browser chrome hidden, but
-   the initial paint has the chrome (address bar) visible — so anything anchored to the bottom
-   of a 100vh box (e.g. the hero's "Scroll" hint) sits below the fold until the user scrolls
-   and the chrome collapses. 100svh is the "small viewport" size — always within what's actually
-   visible. The 100vh line stays first as a fallback for browsers that don't support svh; an
-   unsupported unit makes that whole declaration invalid, so it's simply ignored, not applied. */
+/* Keep the vh fallback before the mobile-browser-safe viewport unit. */
 .viewport-fit-height {
   height: 100vh;
   height: 100svh;
 }
 
-/* Hover states for the scattered "decision fatigue" bubbles in the Problem section.
-   Kept as real CSS (not JS state) so :hover costs nothing on the main thread. Background,
-   border-color, box-shadow and transform must all live here rather than inline — an inline
-   style attribute always beats a stylesheet rule (hover or not), so any of these set inline
-   would make the :hover rule inert. Per-item rotation comes in via the --rot custom property. */
+/* Hover declarations must remain outside inline styles so the cascade can override them. */
 .bubble {
   max-width: min(290px, 78vw);
   font-family: 'Space Grotesk', sans-serif;
@@ -106,7 +95,6 @@ a:hover {
   transform: rotate(0deg) translateY(-3px);
 }
 
-/* Background lives on the class (not inline) so :hover can actually win the cascade. */
 .waitlist-btn {
   background: #e3a62e;
   transition: background 0.2s ease;
@@ -116,7 +104,6 @@ a:hover {
   background: #d89620;
 }
 
-/* Transactional pages mirror the calm paper, ink, and basil palette used in Sustena emails. */
 .action-page {
   position: relative;
   min-height: 100vh;

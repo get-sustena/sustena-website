@@ -1,13 +1,8 @@
-// Scroll-progress driven style math shared by the Hero and How-It-Works sections.
-// Everything here is pure and framework-free — it produces CSS declaration strings
-// consumed through css() (see lib/css.ts) rather than framer-motion/GSAP timelines,
-// so hero/how-it-works stay scrubbed 1:1 to scroll position rather than time.
 
 export function clamp01(x: number): number {
   return Math.max(0, Math.min(1, x));
 }
 
-/** Envelope: fades in [aIn,bIn], holds, fades out [aOut,bOut]. If aOut is omitted the value persists after fading in. */
 export function envelope(p: number, aIn: number, bIn: number, aOut?: number, bOut?: number): number {
   if (aOut === undefined || bOut === undefined) {
     if (p <= aIn) return 0;
@@ -54,8 +49,6 @@ export function floatStyle(e: number, opts: FloatStyleOpts): string {
   const { top, left, rot = 0, variant = 'card', viewportW = 1400 } = opts;
   const ee = clamp01(e);
   const compact = viewportW < 900;
-  // stable per-item jitter derived from each bubble's own rot (already unique) so the layout
-  // reads as scattered/organic rather than a uniform mathematical rescale of the desktop layout
   const jitterX = compact ? rot * 1.3 : 0;
   const jitterY = compact ? rot * 0.9 : 0;
   const leftAdj = compact ? Math.max(13, Math.min(87, 50 + (left - 50) * 0.66 + jitterX)) : left;

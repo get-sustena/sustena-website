@@ -1,7 +1,5 @@
 import type { CSSProperties, SVGAttributes } from 'react';
 
-// Sustena custom line-icon set.
-// 1.5px stroke, round caps/joins, 24x24 viewBox — geometry tuned to echo Poppins' rounded terminals.
 
 export type CEIconName =
   | 'discover'

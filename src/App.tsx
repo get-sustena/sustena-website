@@ -26,11 +26,7 @@ function App() {
     <>
       <Nav />
       <main>
-        {/* Visually hidden but crawlable/screen-reader-visible primary heading. The Hero's
-            big "What should I cook today?" text is the visual centerpiece but fades in
-            through a scroll-driven animation — this gives search engines and assistive tech
-            a stable, always-present h1 without touching that animation. */}
-        <h1 className="sr-only">Sustena — budget-first meal planning, pantry mode, and step-by-step cooking guidance for Nigerian kitchens</h1>
+        <h1 className="sr-only">Sustena: budget-first meal planning, pantry mode, and step-by-step cooking guidance for Nigerian kitchens</h1>
         <Hero />
         <Problem />
         <Solution />
