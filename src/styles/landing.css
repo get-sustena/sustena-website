@@ -1,0 +1,56 @@
+/* The landing page's styles. It loads only with the landing page, so the account pages (/verify, /reset…) keep global.css alone. */
+@import 'tailwindcss' source(none);
+@source '../components/landing';
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../assets/fonts/inter-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../assets/fonts/inter-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Colours and type from Sustena v6.6. */
+@theme {
+  --color-ink: #17291e;
+  --color-on-dark: #fafafa;
+  --color-soft: #5c6459;
+  --color-hairline: #e1e1e1;
+  --color-green: #279a5f;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Bricolage Grotesque', sans-serif;
+
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-move: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* The page switches from its phone layout to its desktop layout here. */
+  --breakpoint-wide: 53.8125rem;
+}
+
+/* global.css paints html and body for every page; this page is white. These rules sit outside any layer so they win over it. */
+html:has(.landing),
+body:has(.landing) {
+  background: var(--color-white);
+}
+
+@layer base {
+  /* Text without its own leading keeps the browser's normal line height, as the approved design did; Tailwind's base sets 1.5. */
+  .landing {
+    font-family: var(--font-sans);
+    line-height: normal;
+    color: var(--color-ink);
+  }
+  .landing :is(h1, h2, h3) {
+    font-optical-sizing: auto;
+  }
+}
