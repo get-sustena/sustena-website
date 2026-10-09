@@ -108,7 +108,7 @@ export const kitchen: { lines: string[]; statement: string; tiles: Tile[] } = {
     {
       title: 'Planned around your budget',
       text: 'Tell it you have ₦7,000 for the day, and it plans breakfast, lunch and dinner that cost less than that. If three meals won’t fit, it tells you the lowest budget that will.',
-      screen: { src: screenBudget, ...SCREEN, alt: 'The budget planner with ₦5,000 picked: akara and pap for breakfast, beans and plantain for lunch, and a veggie stir fry for dinner.' },
+      screen: { src: screenBudget, ...SCREEN, alt: 'The budget planner with ₦7,000 entered: beans and plantain for breakfast, a veggie stir fry for lunch, and concoction rice for dinner.' },
     },
     {
       title: 'In the sizes you buy',
