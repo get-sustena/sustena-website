@@ -52,11 +52,12 @@ export function Kitchen() {
         id="kitchen-title"
         className="font-display text-[13.2vw] leading-[0.86] font-extrabold tracking-[-0.05em] wide:text-[clamp(2.9rem,0.3rem+13.4vw,14.5rem)] wide:tracking-[-0.055em]"
       >
+        {/* The space after each line keeps the words apart for search engines and screen readers. */}
         {kitchen.lines.map((line) => (
           <span key={line} className="block overflow-clip pb-[0.06em]">
             <span data-line className="block">
               {line}
-            </span>
+            </span>{' '}
           </span>
         ))}
       </h2>
