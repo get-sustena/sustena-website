@@ -1,5 +1,4 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import mark from '../../assets/images/logo/resolved-line-ink.svg';
 import { hero, openApp } from '../../content/landing';
 import { APP_URL } from '../../lib/constants';
 import { gsap, MOTION, ScrollTrigger } from '../../lib/gsap';
@@ -61,10 +60,7 @@ export function Hero() {
       className="relative grid grid-cols-1 items-start px-4 pt-[92px] wide:min-h-[max(100svh,720px)] wide:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] wide:items-center wide:px-11 wide:pt-24"
     >
       <div className="pb-10 wide:pb-16">
-        <p className="flex items-center gap-2.5 text-[15px] wide:text-[18px]">
-          <img src={mark} alt="" className="h-3.5 w-auto" />
-          {hero.note}
-        </p>
+        <p className="text-[15px] wide:text-[18px]">{hero.note}</p>
         <h1 className="mt-4 max-w-[9.5em] font-display text-[clamp(3rem,1.4rem+4.4vw,5.6rem)] leading-[0.98] font-extrabold tracking-[-0.035em] text-balance wide:mt-[22px]">
           {hero.title}
         </h1>
