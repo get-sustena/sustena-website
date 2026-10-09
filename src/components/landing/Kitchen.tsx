@@ -85,7 +85,7 @@ export function Kitchen() {
               )}
               {tile.title && (
                 <figcaption className="mt-5 max-w-[30em] text-[15px] leading-[1.55] text-soft wide:text-base">
-                  <b className="mb-1.5 block font-display text-[20px] font-bold tracking-[-0.015em] text-ink wide:text-[22px]">{tile.title}</b>
+                  <b className="mb-1.5 block font-display text-[20px] font-bold tracking-[-0.015em] text-ink wide:text-[22px]">{tile.title}</b>{' '}
                   {tile.text}
                 </figcaption>
               )}
